@@ -7,4 +7,5 @@ public enum ConstraintType {
     DEFAULT_VALUE,
     DOMAIN_VALUE,
     NOT_NULL
+
 }
