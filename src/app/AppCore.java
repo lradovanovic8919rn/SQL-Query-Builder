@@ -6,22 +6,33 @@ import database.MSSQLrepository;
 import database.settings.Settings;
 import database.settings.SettingsImplementation;
 import gui.table.TableModel;
+import lombok.Data;
 import observer.Notification;
 import observer.enums.NotificationCode;
 import observer.implementation.PublisherImplementation;
+import querybuilder.Compiler;
+import querybuilder.CompilerImp;
+import querybuilder.Validator;
+import querybuilder.ValidatorImp;
 import resource.implementation.InformationResource;
 import utils.Constants;
+
 
 public class AppCore extends PublisherImplementation {
 
     private Database database;
     private Settings settings;
     private TableModel tableModel;
+    private Validator validator;
+    private Compiler compiler;
+
 
     public AppCore() {
         this.settings = initSettings();
         this.database = new DatabaseImplementation(new MSSQLrepository(this.settings));
         tableModel = new TableModel();
+        this.compiler=new CompilerImp();
+        this.validator=new ValidatorImp();
     }
 
     private Settings initSettings() {
@@ -56,5 +67,7 @@ public class AppCore extends PublisherImplementation {
         this.tableModel = tableModel;
     }
 
-
+    public Compiler getCompiler() {
+        return compiler;
+    }
 }

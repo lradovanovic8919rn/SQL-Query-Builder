@@ -5,14 +5,13 @@ import lombok.Data;
 import observer.Notification;
 import observer.Subscriber;
 import observer.enums.NotificationCode;
-import querybuilder.Validator;
+import querybuilder.ValidatorImp;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Locale;
 
 @Data
 public class MainFrame extends JFrame implements Subscriber {
@@ -57,7 +56,7 @@ public class MainFrame extends JFrame implements Subscriber {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Upit -> validator
-                Validator v = new Validator(jTextArea.getText().toLowerCase());
+                appCore.getCompiler().compile(jTextArea.getText().toLowerCase());
             }
         });
         Box box = Box.createHorizontalBox();
