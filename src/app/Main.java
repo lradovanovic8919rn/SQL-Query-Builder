@@ -10,8 +10,7 @@ public class Main {
         mainFrame.setAppCore(appCore);
 
 
-        mainFrame.getAppCore().readDataFromTable("EMPLOYEES");
-        mainFrame.getAppCore().loadResource();
+//        mainFrame.getAppCore().loadResource();
 
 //        try {
 //            Thread.sleep(6000);

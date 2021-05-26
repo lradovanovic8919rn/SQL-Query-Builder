@@ -19,7 +19,7 @@ public class DatabaseImplementation implements Database {
     }
 
     @Override
-    public List<Row> readDataFromTable(String tableName) {
-        return repository.get(tableName);
+    public List<Row> readDataFromTable(String upit,String tableName) {
+        return repository.get(upit,tableName);
     }
 }

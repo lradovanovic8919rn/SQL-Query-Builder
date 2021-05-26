@@ -21,6 +21,7 @@ public class CompilerImp implements Compiler{
     public void compile(String text) {
         this.text = text;
 
+
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
@@ -61,6 +62,21 @@ public class CompilerImp implements Compiler{
 
         switch(q){ //TODO implementirati
 
+           /* case "Query": //moze vise od 1arg
+                //args je samo kolona/e
+                System.out.println("select: " + q + " " + args);
+                completeQuery.replace(7, 7, args);
+                for(int i=0; i<completeQuery.length(); i++) {
+                    if (completeQuery.charAt(i) == '"') {
+                        completeQuery.setCharAt(i, ' ');
+                    } else if (completeQuery.charAt(i) == '*') {
+                        completeQuery.setCharAt(i, ' ');
+                    }
+                }
+                System.out.println("Q: " + completeQuery);
+                String s="SELECT * from";
+                break;
+*/
             case "select": //moze vise od 1arg
                 //args je samo kolona/e
                 System.out.println("select: " + q + " " + args);

@@ -56,7 +56,7 @@ public class MainFrame extends JFrame implements Subscriber {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //Upit -> validator
-                appCore.getCompiler().compile(jTextArea.getText().toLowerCase());
+                appCore.compileCore(jTextArea.getText());
             }
         });
         Box box = Box.createHorizontalBox();

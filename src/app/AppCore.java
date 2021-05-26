@@ -50,12 +50,19 @@ public class AppCore extends PublisherImplementation {
         this.notifySubscribers(new Notification(NotificationCode.RESOURCE_LOADED, ir));
     }
 
-    public void readDataFromTable(String fromTable) {
+    public void readDataFromTable(String text,String fromTable) {
 
-        tableModel.setRows(this.database.readDataFromTable(fromTable));
+        tableModel.setRows(this.database.readDataFromTable(text,fromTable));
 
         //Zasto ova linija moze da ostane zakomentarisana?
         //this.notifySubscribers(new Notification(NotificationCode.DATA_UPDATED, this.getTableModel()));
+    }
+
+    public void compileCore(String text){
+        compiler.compile(text.toLowerCase());
+        this.readDataFromTable("select * from jobs where max_salary>=9001","jobs");
+
+
     }
 
 

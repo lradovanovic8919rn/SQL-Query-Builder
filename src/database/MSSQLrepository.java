@@ -96,7 +96,7 @@ public class MSSQLrepository implements Repository {
     }
 
     @Override
-    public List<Row> get(String from) {
+    public List<Row> get(String text,String from) {
 
         List<Row> rows = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class MSSQLrepository implements Repository {
         try {
             this.initConnection();
 
-            String query = "SELECT * FROM " + from;
+            String query = text;
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet rs = preparedStatement.executeQuery();
 

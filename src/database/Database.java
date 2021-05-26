@@ -9,7 +9,7 @@ public interface Database {
 
     DBNode loadResource();
 
-    List<Row> readDataFromTable(String tableName);
+    List<Row> readDataFromTable(String upit,String tableName);
 
 
 }
