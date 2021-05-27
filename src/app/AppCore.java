@@ -57,11 +57,11 @@ public class AppCore extends PublisherImplementation {
         //Zasto ova linija moze da ostane zakomentarisana?
         //this.notifySubscribers(new Notification(NotificationCode.DATA_UPDATED, this.getTableModel()));
     }
-
+    //"select * from jobs where max_salary>=9001"
     public void compileCore(String text){
         compiler.reset();
         String c = compiler.compile(text);
-        this.readDataFromTable("select * from jobs where max_salary>=9001","jobs");
+        this.readDataFromTable(c,"jobs");
         //System.out.println("Ovo je compiler vratio: " + c);
     }
 

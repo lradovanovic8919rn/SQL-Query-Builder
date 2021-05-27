@@ -10,6 +10,9 @@ public class CompilerImp implements Compiler{
     private StringBuilder completeQuery;
     private List<String> queryList;
     private String selectName;
+    private String andWhere;
+    private String orWhere;
+
 
     /*
     Primer upita:
@@ -24,13 +27,16 @@ public class CompilerImp implements Compiler{
 
     @Override
     public String compile(String text) {
+
         this.text = text;
+        andWhere=" ";
+        orWhere=" ";
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
-        completeQuery.append("select ");
+        completeQuery.append("select * from "+ table+" ");
         System.out.println("Q: " + completeQuery);
-        System.out.println("table name: " + table);
+        System.out.println("table name: " + table+" ");
         System.out.println("-----------------------");
 
         String temp = text.substring(text.indexOf(".") + 1);
@@ -42,7 +48,9 @@ public class CompilerImp implements Compiler{
         }
         checkQueryOrder();
 
-        return "Ovde ce da bude zavrsni SQL string";
+        return completeQuery.toString();
+
+        //return "select * from jobs where max_salary>=9001";
     }
 
     @Override
@@ -67,6 +75,10 @@ public class CompilerImp implements Compiler{
     public void queryBuilder(String q, String args) {
         //System.out.println("Q: " + q);
         //System.out.println("ARGS: " + args);
+        StringBuilder sb = new StringBuilder();
+        StringBuilder sb2= new StringBuilder();
+
+        String s;
 
         switch(q){ //TODO implementirati
 
@@ -82,7 +94,8 @@ public class CompilerImp implements Compiler{
                 }
                 this.selectName = temp.toString();
                 //System.out.println(temp);
-                queryList.add("select " + selectName);
+                //queryList.add("select " + selectName);
+                completeQuery.replace(0,completeQuery.length(),"select "+selectName+" from "+table);
                 break;
 
             //sortiranje
@@ -98,14 +111,96 @@ public class CompilerImp implements Compiler{
             //filtriranje
             case "Where":
                 //args je kolona, operator, kriterijum
-                System.out.println("where: " + q + " " + args);
+                sb.delete(0,sb.length());
+                System.out.println(args);
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                System.out.println(" where: " + q + " " + args);
+                System.out.println(args);
+
+                if(andWhere!=" "){
+                   sb.append(andWhere);
+                }
+                if(orWhere!=" "){
+                    sb.append(orWhere);
+                }
+
+                s=" where "+sb.toString();
+                queryList.add(s);
                 break;
             case "OrWhere":
-                //args je kolona, operator, kriterijum
+                sb=new StringBuilder();;
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                int flag=0;
+                for(String str:queryList) {
+                    if (str.contains(" where ")) {
+                        flag++;
+                        String s2=str+" or "+sb.toString();
+                        queryList.remove(str);
+                        queryList.add(s2);
+                    }
+
+                }
+                if (flag==0){
+                    sb2.delete(0,sb2.length());
+                    sb2.append(orWhere);
+                    sb2.append(" or "+sb.toString());
+                    orWhere=sb2.toString();
+
+                }
+
                 System.out.println("orwhere: " + q + " " + args);
+
                 break;
             case "AndWhere":
-                //args je kolona, operator, kriterijum
+                sb=new StringBuilder();;
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String str2=null;
+                int flag2=0;
+                for(String str:queryList){
+                    if(str.contains(" where ")){
+                        flag2++;
+                        if(str.contains(" or ")){
+                            for(int i=0;i<str.length();i++){
+                                if ((str.charAt(i) == ' ')&&(str.charAt(i+1) =='o')&&(str.charAt(i+2)=='r')&&(str.charAt(i+3)==' ')){
+                                    String s1=str.substring(i);
+                                    String s2=str.substring(0,i);
+                                    String s3=s1+" and"+sb.toString()+" "+s2;
+                                    str2=s3;
+                                }
+                            }
+
+                        }else{
+                            s=" and "+sb.toString();
+                            str2=str+s;
+
+                        }
+                        queryList.remove(str);
+                        queryList.add(str2);
+                    }
+
+                }
+                if (flag2==0){
+                    sb2.delete(0,sb2.length());
+                    sb2.append(" and "+sb.toString());
+                    sb2.append(andWhere);
+                    andWhere=sb2.toString();
+
+                }
                 System.out.println("andwhere: " + q + " " + args);
                 break;
             case "WhereBetween":
@@ -190,11 +285,11 @@ public class CompilerImp implements Compiler{
                 System.out.println("whereeqq: " + q + " " + args);
                 break;
 
-            default:
+          /*  default:
                 //znaci da ima samo Query
                 completeQuery.append("* from " + table);
                 System.out.println("default: " + completeQuery);
-                break;
+                break;*/
         }
 
     }
@@ -204,13 +299,19 @@ public class CompilerImp implements Compiler{
     private void checkQueryOrder() {
         String test = "select job_title, avg(salary) from jobs join employees using (job_id) where employee_id in (select employee_id from job_history) group by job_title";
         //TODO proveriti raspored u listi
-        for(int i=0; i<queryList.size(); i++){
+        /*for(int i=0; i<queryList.size(); i++){
             if(!queryList.get(i).contains("select")){
                 completeQuery.append(" * ");
             } else {
                 completeQuery.append(selectName);
             }
+        }*/
+        for(String s:queryList){
+            if(s.contains("where")){
+                completeQuery.append(s);
+            }
         }
+
         System.out.println("SQL: " + completeQuery);
     }
 
