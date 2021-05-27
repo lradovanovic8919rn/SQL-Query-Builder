@@ -57,6 +57,7 @@ public class CompilerImp implements Compiler{
         part = part.substring(0, part.length()-1);
         String[] query = part.split("\\(");
         queryBuilder(query[0], query[1]);
+        checkQueryOrder();
         //System.out.println(part);
     }
 
@@ -66,7 +67,6 @@ public class CompilerImp implements Compiler{
     public void queryBuilder(String q, String args) {
         //System.out.println("Q: " + q);
         //System.out.println("ARGS: " + args);
-        int counter = 0;
 
         switch(q){ //TODO implementirati
 
@@ -83,8 +83,6 @@ public class CompilerImp implements Compiler{
                 this.selectName = temp.toString();
                 //System.out.println(temp);
                 queryList.add("select");
-                checkQueryOrder("select", counter);
-                counter++;
                 break;
 
             //sortiranje
@@ -203,7 +201,8 @@ public class CompilerImp implements Compiler{
 
     //queryName: select
     //counter: 1
-    private void checkQueryOrder(String queryName, int counter) {
+    private void checkQueryOrder() {
+        String test = "select job_title, avg(salary) from jobs join employees using (job_id) where employee_id in (select employee_id from job_history) group by job_title";
         //TODO proveriti raspored u listi
         for(int i=0; i<queryList.size(); i++){
             if(!queryList.get(i).equals("select")){
