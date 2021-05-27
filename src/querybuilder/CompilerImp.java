@@ -40,6 +40,7 @@ public class CompilerImp implements Compiler{
             //System.out.println(newParts[i]);
             compilePart(newParts[i]);
         }
+        checkQueryOrder();
 
         return "Ovde ce da bude zavrsni SQL string";
     }
@@ -57,7 +58,6 @@ public class CompilerImp implements Compiler{
         part = part.substring(0, part.length()-1);
         String[] query = part.split("\\(");
         queryBuilder(query[0], query[1]);
-        checkQueryOrder();
         //System.out.println(part);
     }
 
@@ -82,7 +82,7 @@ public class CompilerImp implements Compiler{
                 }
                 this.selectName = temp.toString();
                 //System.out.println(temp);
-                queryList.add("select");
+                queryList.add("select " + selectName);
                 break;
 
             //sortiranje
@@ -205,13 +205,22 @@ public class CompilerImp implements Compiler{
         String test = "select job_title, avg(salary) from jobs join employees using (job_id) where employee_id in (select employee_id from job_history) group by job_title";
         //TODO proveriti raspored u listi
         for(int i=0; i<queryList.size(); i++){
-            if(!queryList.get(i).equals("select")){
+            if(!queryList.get(i).contains("select")){
                 completeQuery.append(" * ");
             } else {
                 completeQuery.append(selectName);
             }
         }
         System.out.println("SQL: " + completeQuery);
+    }
+
+    @Override
+    public void reset() {
+        text = "";
+        table = "";
+        completeQuery = new StringBuilder();
+        queryList = new ArrayList<>();
+        selectName = "";
     }
 
 }
