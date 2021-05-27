@@ -59,10 +59,9 @@ public class AppCore extends PublisherImplementation {
     }
 
     public void compileCore(String text){
-        compiler.compile(text.toLowerCase());
+        String c = compiler.compile(text);
         this.readDataFromTable("select * from jobs where max_salary>=9001","jobs");
-
-
+        //System.out.println("Ovo je compiler vratio: " + c);
     }
 
 

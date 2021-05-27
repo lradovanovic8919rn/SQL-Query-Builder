@@ -1,10 +1,15 @@
 package querybuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CompilerImp implements Compiler{
 
     private String text;
     private String table;
     private StringBuilder completeQuery;
+    private List<String> queryList;
+    private String selectName;
 
     /*
     Primer upita:
@@ -14,20 +19,19 @@ public class CompilerImp implements Compiler{
     */
     public CompilerImp() {
         this.completeQuery = new StringBuilder();
-
+        this.queryList = new ArrayList();
     }
 
     @Override
-    public void compile(String text) {
+    public String compile(String text) {
         this.text = text;
-
-
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
-        completeQuery.append("SELECT * FROM " + table + " ");
+        completeQuery.append("select ");
         System.out.println("Q: " + completeQuery);
-        System.out.println(table);
+        System.out.println("table name: " + table);
+        System.out.println("-----------------------");
 
         String temp = text.substring(text.indexOf(".") + 1);
         String[] newParts = temp.split("\\)\\.");
@@ -36,7 +40,10 @@ public class CompilerImp implements Compiler{
             //System.out.println(newParts[i]);
             compilePart(newParts[i]);
         }
+
+        return "Ovde ce da bude zavrsni SQL string";
     }
+
     @Override
     public void compilePart(String part) {
         /*
@@ -59,145 +66,153 @@ public class CompilerImp implements Compiler{
     public void queryBuilder(String q, String args) {
         //System.out.println("Q: " + q);
         //System.out.println("ARGS: " + args);
+        int counter = 0;
 
         switch(q){ //TODO implementirati
 
-           /* case "Query": //moze vise od 1arg
+            case "Select": //moze vise od 1arg
                 //args je samo kolona/e
-                System.out.println("select: " + q + " " + args);
-                completeQuery.replace(7, 7, args);
-                for(int i=0; i<completeQuery.length(); i++) {
-                    if (completeQuery.charAt(i) == '"') {
-                        completeQuery.setCharAt(i, ' ');
-                    } else if (completeQuery.charAt(i) == '*') {
-                        completeQuery.setCharAt(i, ' ');
+                //System.out.println("select: " + q + " " + args);
+                StringBuilder temp = new StringBuilder();
+                temp.append(args);
+                for(int i=0; i<temp.length(); i++) {
+                    if(temp.charAt(i) == '"') {
+                        temp.setCharAt(i, ' ');
                     }
                 }
-                System.out.println("Q: " + completeQuery);
-                String s="SELECT * from";
-                break;
-*/
-            case "select": //moze vise od 1arg
-                //args je samo kolona/e
-                System.out.println("select: " + q + " " + args);
-                completeQuery.replace(7, 7, args);
-                for(int i=0; i<completeQuery.length(); i++) {
-                    if (completeQuery.charAt(i) == '"') {
-                        completeQuery.setCharAt(i, ' ');
-                    } else if (completeQuery.charAt(i) == '*') {
-                        completeQuery.setCharAt(i, ' ');
-                    }
-                }
-                System.out.println("Q: " + completeQuery);
+                this.selectName = temp.toString();
+                //System.out.println(temp);
+                queryList.add("select");
+                checkQueryOrder("select", counter);
+                counter++;
                 break;
 
             //sortiranje
-            case "orderby": //moze vise od 1arg
+            case "OrderBy": //moze vise od 1arg
                 //args je samo kolona/e
                 System.out.println("orderby: " + q + " " + args);
                 break;
-            case "orderbydesc": //moze vise od 1arg
+            case "OrderByDesc": //moze vise od 1arg
                 //args je samo kolona/e
                 System.out.println("orderbydesc: " + q + " " + args);
                 break;
 
             //filtriranje
-            case "where":
+            case "Where":
                 //args je kolona, operator, kriterijum
                 System.out.println("where: " + q + " " + args);
                 break;
-            case "orwhere":
+            case "OrWhere":
                 //args je kolona, operator, kriterijum
                 System.out.println("orwhere: " + q + " " + args);
                 break;
-            case "andwhere":
+            case "AndWhere":
                 //args je kolona, operator, kriterijum
                 System.out.println("andwhere: " + q + " " + args);
                 break;
-            case "wherebetween":
+            case "WhereBetween":
                 //args je kolona, int1, int2
                 System.out.println("wherebetween: " + q + " " + args);
                 break;
-            case "wherein":
+            case "WhereIn":
                 //args je kolona
                 System.out.println("wherein: " + q + " " + args);
                 break;
-            case "parametarlist":
+            case "ParametarList":
                 //args je lista parametara p1, p2, p3...
                 System.out.println("parametarlist: " + q + " " + args);
                 break;
 
             //spajanje tabela
-            case "join":
+            case "Join":
                 //args je tabela a posle toga sigurno dolazi case "on"
                 System.out.println("join: " + q + " " + args);
                 break;
-            case "on":
+            case "On":
                 //args je kolona1, operator, kolona2
                 System.out.println("on: " + q + " " + args);
                 break;
 
             //stringovne operacije
-            case "whereendswith":
+            case "WhereEndsWith":
                 //args je kolona, patern
                 System.out.println("whereendswith: " + q + " " + args);
                 break;
-            case "wherestartswith":
+            case "WhereStartsWith":
                 //args je kolona, patern
                 System.out.println("wherestartswith: " + q + " " + args);
                 break;
-            case "wherecontains":
+            case "WhereContains":
                 //args je kolona, patern
                 System.out.println("wherecontains: " + q + " " + args);
                 break;
 
             //funkcije agregacije
             //alias je opcioni argument
-            case "avg":
+            case "Avg":
                 //args je kolona, alias
                 System.out.println("avg: " + q + " " + args);
                 break;
-            case "count":
+            case "Count":
                 //args je kolona, alias
                 System.out.println("count: " + q + " " + args);
                 break;
-            case "min":
+            case "Min":
                 //args je kolona, alias
                 System.out.println("min: " + q + " " + args);
                 break;
-            case "max":
+            case "Max":
                 //args je kolona, alias
                 System.out.println("max: " + q + " " + args);
                 break;
-            case "groupby": //moze vise od 1 arg
+            case "GroupBy": //moze vise od 1 arg
                 //args je samo kolona/e
                 System.out.println("groupby: " + q + " " + args);
                 break;
-            case "having":
+            case "Having":
                 //args je alias, operator, kriterijum
                 System.out.println("having: " + q + " " + args);
                 break;
-            case "andhaving":
+            case "AndHaving":
                 //args je alias, operator, kriterijum
                 System.out.println("andhaving: " + q + " " + args);
                 break;
-            case "orhaving":
+            case "OrHaving":
                 //args je alias, operator, kriterijum
                 System.out.println("orhaving: " + q + " " + args);
                 break;
 
             //podupiti
-            case "whereinq":
+            case "WhereInQ":
                 //args je kolona, query
                 System.out.println("whereinq: " + q + " " + args);
                 break;
-            case "whereeqq":
+            case "WhereEqQ":
                 //args je kolona, query
                 System.out.println("whereeqq: " + q + " " + args);
                 break;
+
+            default:
+                //znaci da ima samo Query
+                completeQuery.append("* from " + table);
+                System.out.println("default: " + completeQuery);
+                break;
         }
+
     }
 
-
+    //queryName: select
+    //counter: 1
+    private void checkQueryOrder(String queryName, int counter) {
+        //TODO proveriti raspored u listi
+        for(int i=0; i<queryList.size(); i++){
+            if(!queryList.get(i).equals("select")){
+                completeQuery.append(" * ");
+            } else {
+                completeQuery.append(selectName);
+            }
+        }
+        System.out.println("SQL: " + completeQuery);
+    }
 
 }
