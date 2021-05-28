@@ -180,7 +180,7 @@ public class CompilerImp implements Compiler{
                 }
                 int flag=0;
                 for(String str:queryList) {
-                    if ((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))) {
+                    if ((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in ")&&!(str.contains(" like "))) {
                         flag++;
                         String s2=str+" or "+sb.toString();
                         queryList.remove(str);
@@ -210,7 +210,7 @@ public class CompilerImp implements Compiler{
                 String str2=null;
                 int flag2=0;
                 for(String str:queryList){
-                    if((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))){
+                    if((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))&&!(str.contains(" like "))){
                         flag2++;
                         if(str.contains(" or ")){
                             for(int i=0;i<str.length();i++){
