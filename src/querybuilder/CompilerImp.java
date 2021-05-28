@@ -12,6 +12,7 @@ public class CompilerImp implements Compiler{
     private String selectName;
     private String andWhere;
     private String orWhere;
+    private String whereIn;
 
 
     /*
@@ -142,7 +143,7 @@ public class CompilerImp implements Compiler{
                 }
                 int flag=0;
                 for(String str:queryList) {
-                    if (str.contains(" where ")) {
+                    if ((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))) {
                         flag++;
                         String s2=str+" or "+sb.toString();
                         queryList.remove(str);
@@ -172,7 +173,7 @@ public class CompilerImp implements Compiler{
                 String str2=null;
                 int flag2=0;
                 for(String str:queryList){
-                    if(str.contains(" where ")){
+                    if((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))){
                         flag2++;
                         if(str.contains(" or ")){
                             for(int i=0;i<str.length();i++){
@@ -204,16 +205,59 @@ public class CompilerImp implements Compiler{
                 System.out.println("andwhere: " + q + " " + args);
                 break;
             case "WhereBetween":
-                //args je kolona, int1, int2
-                System.out.println("wherebetween: " + q + " " + args);
+                sb=new StringBuilder();;
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String col=null;
+                String st=null;
+                String to=null;
+                int ind=0;
+                int zarez=0;
+                for(int i=0;i<(sb.toString()).length();i++){
+                    if((sb.toString()).charAt(i)==','){
+                        zarez++;
+                        if (zarez==1){
+                            ind=i+1;
+                            col=(sb.toString()).substring(0,i);
+                        }
+                       if(zarez==2){
+                           st=(sb.toString()).substring(ind,i);
+                           to=(sb.toString()).substring(i+1);
+                       }
+                    }
+                }
+
+                String sf=" where "+col+" between "+st+" and "+to;
+                queryList.add(sf);
+                System.out.println("wherebetween: " + q + " " + args+' ' + zarez+' '+sb.toString());
                 break;
             case "WhereIn":
-                //args je kolona
+                sb=new StringBuilder();;
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                whereIn=" where "+sb.toString()+" in ";
                 System.out.println("wherein: " + q + " " + args);
                 break;
             case "ParametarList":
-                //args je lista parametara p1, p2, p3...
+                sb=new StringBuilder();;
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                whereIn=whereIn+"("+sb.toString()+")";
+                queryList.add(whereIn);
                 System.out.println("parametarlist: " + q + " " + args);
+                System.out.println(whereIn);
                 break;
 
             //spajanje tabela
@@ -307,7 +351,7 @@ public class CompilerImp implements Compiler{
             }
         }*/
         for(String s:queryList){
-            if(s.contains("where")){
+            if( s.contains(" where ")) {
                 completeQuery.append(s);
             }
         }
