@@ -17,6 +17,9 @@ public class CompilerImp implements Compiler{
     private String whereEndsWith;
     private String whereStartsWith;
     private String whereContains;
+    //agregacija
+    private String whereInQ;
+    private String whereEqQ;
 
     /*
     Primer upita:
@@ -397,10 +400,36 @@ public class CompilerImp implements Compiler{
             case "WhereInQ":
                 //args je kolona, query
                 System.out.println("whereinq: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , a -> where ime_kolone in a
+                //TODO a promeniti u upit
+                String[] wiqSplit = sb.toString().split(",");
+                whereInQ = " where " + wiqSplit[0] + " in " + wiqSplit[1];
+                System.out.println(whereInQ);
+                queryList.add(whereInQ);
                 break;
             case "WhereEqQ":
                 //args je kolona, query
                 System.out.println("whereeqq: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , a -> where ime_kolone = a
+                //TODO a promeniti u upit
+                String[] weqSplit = sb.toString().split(",");
+                whereEqQ = " where " + weqSplit[0] + " = " + weqSplit[1];
+                System.out.println(whereEqQ);
+                queryList.add(whereEqQ);
                 break;
 
           /*  default:
