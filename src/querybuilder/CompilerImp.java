@@ -1,5 +1,6 @@
 package querybuilder;
 
+import javax.management.Query;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,11 +102,29 @@ public class CompilerImp implements Compiler{
 
             //sortiranje
             case "OrderBy": //moze vise od 1arg
-                //args je samo kolona/e
+                sb=new StringBuilder();
+                System.out.println(args);
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String orderstr=" order by "+sb.toString()+" asc ";
+                queryList.add(orderstr);
                 System.out.println("orderby: " + q + " " + args);
                 break;
             case "OrderByDesc": //moze vise od 1arg
-                //args je samo kolona/e
+                sb=new StringBuilder();
+                System.out.println(args);
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String orderdsc=" order by "+sb.toString()+" desc ";
+                queryList.add(orderdsc);
                 System.out.println("orderbydesc: " + q + " " + args);
                 break;
 
@@ -352,6 +371,11 @@ public class CompilerImp implements Compiler{
         }*/
         for(String s:queryList){
             if( s.contains(" where ")) {
+                completeQuery.append(s);
+            }
+        }
+        for(String s:queryList){
+            if( s.contains(" order by ")) {
                 completeQuery.append(s);
             }
         }
