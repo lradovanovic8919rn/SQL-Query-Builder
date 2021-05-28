@@ -17,7 +17,21 @@ public class CompilerImp implements Compiler{
     private String whereEndsWith;
     private String whereStartsWith;
     private String whereContains;
-    //agregacija
+    private String avg;
+    private String avgAlias;
+    private String count;
+    private String countAlias;
+    private String min;
+    private String minAlias;
+    private String max;
+    private String maxAlias;
+    private String groupBy;
+    private String having;
+    private String havingAlias;
+    private String andHaving;
+    private String andHavingAlias;
+    private String orHaving;
+    private String orHavingAlias;
     private String whereInQ;
     private String whereEqQ;
 
@@ -34,7 +48,6 @@ public class CompilerImp implements Compiler{
 
     @Override
     public String compile(String text) {
-
         this.text = text;
         andWhere=" ";
         orWhere=" ";
@@ -53,8 +66,8 @@ public class CompilerImp implements Compiler{
             //System.out.println(newParts[i]);
             compilePart(newParts[i]);
         }
-        checkQueryOrder();
 
+        checkQueryOrder();
         return completeQuery.toString();
 
         //return "select * from jobs where max_salary>=9001";
@@ -87,7 +100,7 @@ public class CompilerImp implements Compiler{
 
         String s;
 
-        switch(q){ //TODO implementirati
+        switch(q){
 
             case "Select": //moze vise od 1arg
                 //args je samo kolona/e
@@ -366,34 +379,163 @@ public class CompilerImp implements Compiler{
             case "Avg":
                 //args je kolona, alias
                 System.out.println("avg: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , alias -> avg ime_kolone
+                if(sb.toString().contains(",")) {
+                    String[] avgSplit = sb.toString().split(",");
+                    avg = " avg(" + avgSplit[0] + ")";
+                    avgAlias = avgSplit[1];
+                    System.out.println("avg: " + avg);
+                    queryList.add(avg);
+                } else { //znaci da nema alias
+                    avg = " avg(" + sb + ")";
+                    queryList.add(avg);
+                }
                 break;
             case "Count":
                 //args je kolona, alias
                 System.out.println("count: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                if(sb.toString().contains(",")) {
+                    String[] countSplit = sb.toString().split(",");
+                    count = " count(" + countSplit[0] + ")";
+                    countAlias = countSplit[1];
+                    System.out.println("count: " + count);
+                    queryList.add(count);
+                } else { //znaci da nema alias
+                    count = " count(" + sb + ")";
+                    queryList.add(count);
+                }
                 break;
             case "Min":
                 //args je kolona, alias
                 System.out.println("min: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                if(sb.toString().contains(",")) {
+                    String[] minSplit = sb.toString().split(",");
+                    min = " min(" + minSplit[0] + ")";
+                    minAlias = minSplit[1];
+                    System.out.println("min: " + min);
+                    queryList.add(min);
+                } else { //znaci da nema alias
+                    min = " min(" + sb + ")";
+                    queryList.add(min);
+                }
                 break;
             case "Max":
                 //args je kolona, alias
                 System.out.println("max: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                if(sb.toString().contains(",")) {
+                    String[] maxSplit = sb.toString().split(",");
+                    max = " max(" + maxSplit[0] + ")";
+                    maxAlias = maxSplit[1];
+                    System.out.println("max: " + max);
+                    queryList.add(max);
+                } else { //znaci da nema alias
+                    max = " max(" + sb + ")";
+                    queryList.add(max);
+                }
                 break;
             case "GroupBy": //moze vise od 1 arg
                 //args je samo kolona/e
                 System.out.println("groupby: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                groupBy = " group by " + sb;
+                queryList.add(groupBy);
                 break;
-            case "Having":
+            case "Having": //TODO moram da pogledam kako treba da izgleda having na kraju
                 //args je alias, operator, kriterijum
                 System.out.println("having: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String[] havingSplit = sb.toString().split(",");
+                /*
+                having = " having " + havingSplit[0] + " ";
+                havingAlias = havingSplit[1];
+                System.out.println("having: " + having);
+                queryList.add(having);
+                //kada nema alias?
+                having = " having " + sb + " ";
+                queryList.add(having);
+                */
                 break;
             case "AndHaving":
                 //args je alias, operator, kriterijum
                 System.out.println("andhaving: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String[] andHavingSplit = sb.toString().split(",");
+                /*
+                andHaving = " andHaving " + andHavingSplit[0] + " ";
+                andHavingAlias = andHavingSplit[1];
+                System.out.println("andHaving: " + andHaving);
+                queryList.add(andHaving);
+                //kada nema alias?
+                andHaving = " andHaving " + sb + " ";
+                queryList.add(andHaving);
+                 */
                 break;
             case "OrHaving":
                 //args je alias, operator, kriterijum
                 System.out.println("orhaving: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                String[] orHavingSplit = sb.toString().split(",");
+                /*
+                orHaving = " orHaving " + orHavingSplit[0] + " ";
+                orHavingAlias = orHavingSplit[1];
+                System.out.println("orHaving: " + orHaving);
+                queryList.add(orHaving);
+                //kada nema alias?
+                orHaving = " orHaving " + sb + " ";
+                queryList.add(orHaving);
+                 */
                 break;
 
             //podupiti
@@ -431,14 +573,14 @@ public class CompilerImp implements Compiler{
                 System.out.println(whereEqQ);
                 queryList.add(whereEqQ);
                 break;
-
-          /*  default:
+            /*
+            default:
                 //znaci da ima samo Query
                 completeQuery.append("* from " + table);
                 System.out.println("default: " + completeQuery);
-                break;*/
+                break;
+                */
         }
-
     }
 
     //queryName: select
@@ -468,6 +610,8 @@ public class CompilerImp implements Compiler{
                 completeQuery.append(s);
             }
         }
+        //TODO raspored za agregacije
+        //TODO kada ide AS za agregaciju a kada je projekcija
 
         System.out.println("SQL: " + completeQuery);
     }
