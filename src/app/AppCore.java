@@ -61,7 +61,7 @@ public class AppCore extends PublisherImplementation {
     public void compileCore(String text){
         compiler.reset();
         String c = compiler.compile(text);
-        this.readDataFromTable(c,"jobs");
+        this.readDataFromTable(c, compiler.getTable());
         //System.out.println("Ovo je compiler vratio: " + c);
     }
 

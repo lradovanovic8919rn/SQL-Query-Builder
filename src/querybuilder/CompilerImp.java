@@ -1,6 +1,5 @@
 package querybuilder;
 
-import javax.management.Query;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,9 @@ public class CompilerImp implements Compiler{
     private String orWhere;
     private String whereIn;
     private String joinOn;
-
+    private String whereEndsWith;
+    private String whereStartsWith;
+    private String whereContains;
 
     /*
     Primer upita:
@@ -144,7 +145,7 @@ public class CompilerImp implements Compiler{
                 System.out.println(args);
 
                 if(andWhere!=" "){
-                   sb.append(andWhere);
+                    sb.append(andWhere);
                 }
                 if(orWhere!=" "){
                     sb.append(orWhere);
@@ -244,10 +245,10 @@ public class CompilerImp implements Compiler{
                             ind=i+1;
                             col=(sb.toString()).substring(0,i);
                         }
-                       if(zarez==2){
-                           st=(sb.toString()).substring(ind,i);
-                           to=(sb.toString()).substring(i+1);
-                       }
+                        if(zarez==2){
+                            st=(sb.toString()).substring(ind,i);
+                            to=(sb.toString()).substring(i+1);
+                        }
                     }
                 }
 
@@ -311,14 +312,50 @@ public class CompilerImp implements Compiler{
             case "WhereEndsWith":
                 //args je kolona, patern
                 System.out.println("whereendswith: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , '%nesto' -> where ime_kolone like '%nesto'
+                String[] wewSplit = sb.toString().split(",");
+                whereEndsWith = " where " + wewSplit[0] + " like " + wewSplit[1];
+                System.out.println(whereEndsWith);
+                queryList.add(whereEndsWith);
                 break;
             case "WhereStartsWith":
                 //args je kolona, patern
                 System.out.println("wherestartswith: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , 'nesto%' -> where ime_kolone like 'nesto%'
+                String[] wswSplit = sb.toString().split(",");
+                whereStartsWith = " where " + wswSplit[0] + " like " + wswSplit[1];
+                System.out.println(whereStartsWith);
+                queryList.add(whereStartsWith);
                 break;
             case "WhereContains":
                 //args je kolona, patern
                 System.out.println("wherecontains: " + q + " " + args);
+                sb = new StringBuilder();
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if(sb.charAt(i) == '"') {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                //ime kolone , '%nesto%' -> where ime_kolone like '%nesto%'
+                String[] wcSplit = sb.toString().split(",");
+                whereContains = " where " + wcSplit[0] + " like " + wcSplit[1];
+                System.out.println(whereContains);
+                queryList.add(whereContains);
                 break;
 
             //funkcije agregacije
@@ -413,6 +450,11 @@ public class CompilerImp implements Compiler{
         completeQuery = new StringBuilder();
         queryList = new ArrayList<>();
         selectName = "";
+    }
+
+    @Override
+    public String getTable() {
+        return table;
     }
 
 }

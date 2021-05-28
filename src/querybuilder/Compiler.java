@@ -5,4 +5,5 @@ public interface Compiler {
     void compilePart(String part);
     void queryBuilder(String q, String args);
     void reset();
+    String getTable();
 }
