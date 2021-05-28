@@ -14,6 +14,7 @@ public class CompilerImp implements Compiler{
     private String andWhere;
     private String orWhere;
     private String whereIn;
+    private String joinOn;
 
 
     /*
@@ -281,11 +282,28 @@ public class CompilerImp implements Compiler{
 
             //spajanje tabela
             case "Join":
-                //args je tabela a posle toga sigurno dolazi case "on"
+                sb=new StringBuilder();
+                System.out.println(args);
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                joinOn=" join "+sb.toString();
                 System.out.println("join: " + q + " " + args);
                 break;
             case "On":
-                //args je kolona1, operator, kolona2
+                sb=new StringBuilder();
+                System.out.println(args);
+                sb.append(args);
+                for(int i=0; i<sb.length(); i++) {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
+                        sb.setCharAt(i, ' ');
+                    }
+                }
+                joinOn=joinOn+" on ("+sb.toString()+")";
+                queryList.add(joinOn);
                 System.out.println("on: " + q + " " + args);
                 break;
 
@@ -369,6 +387,11 @@ public class CompilerImp implements Compiler{
                 completeQuery.append(selectName);
             }
         }*/
+        for(String s:queryList){
+            if( s.contains(" join ")) {
+                completeQuery.append(s);
+            }
+        }
         for(String s:queryList){
             if( s.contains(" where ")) {
                 completeQuery.append(s);
