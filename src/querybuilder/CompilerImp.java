@@ -1,5 +1,6 @@
 package querybuilder;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class CompilerImp implements Compiler{
     private String orHavingAlias;
     private String whereInQ;
     private String whereEqQ;
+    private int flg;
+    private String tempo;
 
     /*
     Primer upita:
@@ -51,6 +54,7 @@ public class CompilerImp implements Compiler{
         this.text = text;
         andWhere=" ";
         orWhere=" ";
+        tempo= " ";
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
@@ -115,7 +119,20 @@ public class CompilerImp implements Compiler{
                 this.selectName = temp.toString();
                 //System.out.println(temp);
                 //queryList.add("select " + selectName);
-                completeQuery.replace(0,completeQuery.length(),"select "+selectName+" from "+table);
+                if(tempo==" ") {
+                    completeQuery.replace(0, completeQuery.length(), "select " + selectName + " from " + table);
+                }else{
+                    if(selectName.contains(avgAlias)){
+                        selectName=selectName.replace(avgAlias,tempo);
+                        completeQuery.replace(0, completeQuery.length(), "select " + selectName + " from " + table);
+
+                    }else {
+                        completeQuery.replace(0, completeQuery.length(), "select " + selectName+","+tempo + " from " + table);
+                        System.out.print("sssssssssssssssssssssssssssssssss+++");
+
+                    }
+                }
+                System.out.println("ssssssssssssssssssss"+tempo);
                 break;
 
             //sortiranje
@@ -180,7 +197,7 @@ public class CompilerImp implements Compiler{
                 }
                 int flag=0;
                 for(String str:queryList) {
-                    if ((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in ")&&!(str.contains(" like "))) {
+                    if ((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in ")&&!(str.contains(" like ")))) {
                         flag++;
                         String s2=str+" or "+sb.toString();
                         queryList.remove(str);
@@ -391,11 +408,88 @@ public class CompilerImp implements Compiler{
                     String[] avgSplit = sb.toString().split(",");
                     avg = " avg(" + avgSplit[0] + ")";
                     avgAlias = avgSplit[1];
-                    System.out.println("avg: " + avg);
-                    queryList.add(avg);
+                    flg=0;
+
+                    if((text.contains(".Select("))&&!(completeQuery.toString().contains("select * "))){
+                        flg++;
+                        if(completeQuery.toString().contains(avgAlias.trim())) {
+                            /*for (int i = 0; i < completeQuery.toString().length(); i++) {
+                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
+                                    String ss1 = completeQuery.toString().substring(0, i + 1);
+                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
+                                    String ss3 = ss1.replace(avgAlias, avg + " as \"" + avgAlias + "\" ");
+                                  //  completeQuery.append(ss3);
+                                   // completeQuery.append(avg + " as \"" + avgAlias + "\" ");
+                                   // completeQuery.append(ss2);
+                                    break;
+                                }
+
+                            }*/
+                             String cc= completeQuery.toString().replace(avgAlias, avg + " as \"" + avgAlias + "\" ");
+                             completeQuery = new StringBuilder();
+                             completeQuery.append(cc);
+
+
+                        }else if(!completeQuery.toString().contains(avgAlias.trim())){
+                            for (int i = 0; i < completeQuery.toString().length(); i++) {
+                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
+                                    String ss1 = completeQuery.toString().substring(0, i + 1);
+                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
+                                    completeQuery = new StringBuilder();
+                                    completeQuery.append(ss1);
+                                    completeQuery.append(","+avg + " as \"" + avgAlias + "\" ");
+                                    completeQuery.append(ss2);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempo==" "){
+                            tempo =avg + " as \"" + avgAlias + " \" ";
+
+                        }
+                    }
+                    if((!text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        String cc= completeQuery.toString().replace("*",avg + " as \"" + avgAlias + " \"");
+                        completeQuery = new StringBuilder();
+                        completeQuery.append(cc);
+                    }
+
+                        System.out.println("avg: " + avg);
+                    System.out.println(completeQuery.toString());
+                    //queryList.add(avg);
                 } else { //znaci da nema alias
                     avg = " avg(" + sb + ")";
-                    queryList.add(avg);
+                    if(completeQuery.toString().contains("select * ")){
+                        String ss =completeQuery.toString().replace("select *","select "+avg+" ");
+                        completeQuery=new StringBuilder();
+                        completeQuery.append(ss+"");
+
+                        System.out.println(ss);
+
+                        System.out.println(completeQuery.toString());
+                    }else{
+                        for(int i=0;i<completeQuery.toString().length();i++){
+                            if((completeQuery.toString().charAt(i)==' ')&&(completeQuery.toString().charAt(i+1)=='f')&&(completeQuery.toString().charAt(i+2)=='r')&&(completeQuery.toString().charAt(i+3)=='o')&&(completeQuery.toString().charAt(i+4)=='m')&&(completeQuery.toString().charAt(i+5)==' ')){
+                                String ss1=completeQuery.toString().substring(0,i+1);
+                                String ss2=completeQuery.toString().substring(i+1,completeQuery.toString().length());
+                                completeQuery=new StringBuilder();
+                                completeQuery.append(ss1);
+                                completeQuery.append(" , "+avg+" ");
+                                completeQuery.append(ss2);
+                                break;
+                            }
+                        }
+                    }
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))&&(flg>0)){
+                        if(tempo==" "){
+                            tempo = avg + " ";
+
+                        }
+                    }
+
                 }
                 break;
             case "Count":
@@ -433,6 +527,7 @@ public class CompilerImp implements Compiler{
                     String[] minSplit = sb.toString().split(",");
                     min = " min(" + minSplit[0] + ")";
                     minAlias = minSplit[1];
+
                     System.out.println("min: " + min);
                     queryList.add(min);
                 } else { //znaci da nema alias
@@ -463,7 +558,7 @@ public class CompilerImp implements Compiler{
                 break;
             case "GroupBy": //moze vise od 1 arg
                 //args je samo kolona/e
-                System.out.println("groupby: " + q + " " + args);
+                System.out.println("C" + q + " " + args);
                 sb = new StringBuilder();
                 sb.append(args);
                 for(int i=0; i<sb.length(); i++) {

@@ -13,11 +13,20 @@ public class TableModel extends DefaultTableModel {
     private List<Row> rows;
 
 
+
     private void updateModel() {
 
-        int columnCount = rows.get(1).getFields().keySet().size();
+        Vector columnVector=null;
+        int columnCount=0;
+        if(rows.size()>1) {
+            columnCount = rows.get(1).getFields().keySet().size();
+            columnVector = DefaultTableModel.convertToVector(rows.get(1).getFields().keySet().toArray());
 
-        Vector columnVector = DefaultTableModel.convertToVector(rows.get(1).getFields().keySet().toArray());
+        }else if(rows.size()==1){
+            columnCount = rows.get(0).getFields().keySet().size();
+            columnVector = DefaultTableModel.convertToVector(rows.get(0).getFields().keySet().toArray());
+
+        }
         Vector dataVector = new Vector(columnCount);
 
         for (int i = 0; i < rows.size(); i++) {

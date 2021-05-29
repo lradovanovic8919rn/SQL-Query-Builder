@@ -111,9 +111,10 @@ public class MSSQLrepository implements Repository {
             while (rs.next()) {
 
                 Row row = new Row();
-                row.setName(from);
+               // row.setName(from);
 
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                System.out.println(text);
                 for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
                     row.addField(resultSetMetaData.getColumnName(i), rs.getString(i));
                 }
