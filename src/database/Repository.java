@@ -9,5 +9,5 @@ public interface Repository {
 
     DBNode getSchema();
 
-    List<Row> get(String text,String from);
+    List<Row> get(String text, String from);
 }

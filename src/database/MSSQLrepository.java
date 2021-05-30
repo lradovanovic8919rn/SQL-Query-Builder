@@ -93,7 +93,7 @@ public class MSSQLrepository implements Repository {
     }
 
     @Override
-    public List<Row> get(String text,String from) {
+    public List<Row> get(String text, String from) {
 
         List<Row> rows = new ArrayList<>();
 
@@ -108,7 +108,7 @@ public class MSSQLrepository implements Repository {
             while (rs.next()) {
 
                 Row row = new Row();
-               // row.setName(from);
+                // row.setName(from);
 
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 System.out.println(text);

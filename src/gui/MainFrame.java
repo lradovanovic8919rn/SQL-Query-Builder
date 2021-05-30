@@ -5,7 +5,6 @@ import lombok.Data;
 import observer.Notification;
 import observer.Subscriber;
 import observer.enums.NotificationCode;
-import querybuilder.ValidatorImp;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
