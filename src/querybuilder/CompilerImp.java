@@ -41,6 +41,8 @@ public class CompilerImp implements Compiler{
     private String tempCount;
     private String tempMin;
     private String tempMax;
+    private String andHavingHelp;
+    private String orHavinHelp;
 
     /*
     Primer upita:
@@ -64,6 +66,8 @@ public class CompilerImp implements Compiler{
         tempCount=" ";
         tempMin=" ";
         tempMax=" ";
+        andHavingHelp=" ";
+        orHavinHelp=" ";
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
@@ -256,14 +260,14 @@ public class CompilerImp implements Compiler{
                 String str2=null;
                 int flag2=0;
                 for(String str:queryList){
-                    if((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))&&!(str.contains(" like "))){
+                    if((str.contains(" where "))&&!(str.contains(" between "))&&!(str.contains(" in "))){
                         flag2++;
                         if(str.contains(" or ")){
                             for(int i=0;i<str.length();i++){
                                 if ((str.charAt(i) == ' ')&&(str.charAt(i+1) =='o')&&(str.charAt(i+2)=='r')&&(str.charAt(i+3)==' ')){
                                     String s1=str.substring(i);
                                     String s2=str.substring(0,i);
-                                    String s3=s1+" and"+sb.toString()+" "+s2;
+                                    String s3=s2+" and"+sb.toString()+" "+s1;
                                     str2=s3;
                                 }
                             }
@@ -811,19 +815,19 @@ public class CompilerImp implements Compiler{
                         sb.setCharAt(i, ' ');
                     }
                 }
-               // String[] havingSplit = sb.toString().split(",");
-
                 String hv=" having "+sb.toString()+" ";
+                if(andHavingHelp!=" "){
+                    hv=hv+andHavingHelp;
+                    System.out.println("1");
+                }
+                if(orHavinHelp!=" "){
+                    hv=hv+orHavinHelp;
+                    System.out.println("222222222222"+hv);
+
+                }
                 queryList.add(hv);
-                /*
-                having = " having " + havingSplit[0] + " ";
-                havingAlias = havingSplit[1];
-                System.out.println("having: " + having);
-                queryList.add(having);
-                //kada nema alias?
-                having = " having " + sb + " ";
-                queryList.add(having);
-                */
+
+
                 break;
             case "AndHaving": //TODO andhaving, orhaving
                 //args je alias, operator, kriterijum
@@ -831,21 +835,44 @@ public class CompilerImp implements Compiler{
                 sb = new StringBuilder();
                 sb.append(args);
                 for(int i=0; i<sb.length(); i++) {
-                    if(sb.charAt(i) == '"') {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
                         sb.setCharAt(i, ' ');
                     }
                 }
                 String[] andHavingSplit = sb.toString().split(",");
+                int flagah=0;
+                for(String strrr:queryList){
+                    if(strrr.contains(" having ")){
+                        flagah++;
+                        String strrr2=new String();
+                        if(strrr.contains(" or ")){
+                            for(int i=0;i<strrr.length();i++){
+                                if ((strrr.charAt(i) == ' ')&&(strrr.charAt(i+1) =='o')&&(strrr.charAt(i+2)=='r')&&(strrr.charAt(i+3)==' ')){
+                                    String s2=strrr.substring(i);
+                                    String s1=strrr.substring(0,i);
+                                    String s3=s1+" and"+sb.toString()+" "+s2;
+                                    strrr2=s3;
+                                    System.out.println("ceo "+strrr2);
+                                    System.out.println("prvi "+s1);
+                                    System.out.println("drugi"+s2);
 
-                /*
-                andHaving = " andHaving " + andHavingSplit[0] + " ";
-                andHavingAlias = andHavingSplit[1];
-                System.out.println("andHaving: " + andHaving);
-                queryList.add(andHaving);
-                //kada nema alias?
-                andHaving = " andHaving " + sb + " ";
-                queryList.add(andHaving);
-                 */
+                                }
+                            }
+
+                        }else{
+                            s=" and "+sb.toString();
+                            strrr2=strrr+s;
+
+                        }
+                        queryList.remove(strrr);
+                        queryList.add(strrr2);
+                    }
+                }
+                if (flagah==0){
+                    andHavingHelp=" and "+sb.toString()+" ";
+                    System.out.println("saddasdasdsadsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+andHavingHelp);
+                }
+
                 break;
             case "OrHaving":
                 //args je alias, operator, kriterijum
@@ -857,16 +884,26 @@ public class CompilerImp implements Compiler{
                         sb.setCharAt(i, ' ');
                     }
                 }
-                String[] orHavingSplit = sb.toString().split(",");
-                /*
-                orHaving = " orHaving " + orHavingSplit[0] + " ";
-                orHavingAlias = orHavingSplit[1];
-                System.out.println("orHaving: " + orHaving);
-                queryList.add(orHaving);
-                //kada nema alias?
-                orHaving = " orHaving " + sb + " ";
-                queryList.add(orHaving);
-                 */
+
+                int flagoh=0;
+                for(String str:queryList) {
+                    if (str.contains(" having ")) {
+                        flagoh++;
+                        String s2=str+" or "+sb.toString();
+                        System.out.println("Ovaj se ubacuje u novi: "+s2);
+                        queryList.remove(str);
+                        queryList.add(s2);
+                    }
+
+                }
+                if (flagoh==0){
+
+                    orHavinHelp=" or "+sb.toString();
+                    System.out.println(sb.toString());
+                    System.out.println("saddasdasdsadsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+orHavinHelp);
+
+                }
+
                 break;
 
             //podupiti
@@ -876,7 +913,7 @@ public class CompilerImp implements Compiler{
                 sb = new StringBuilder();
                 sb.append(args);
                 for(int i=0; i<sb.length(); i++) {
-                    if(sb.charAt(i) == '"') {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
                         sb.setCharAt(i, ' ');
                     }
                 }
