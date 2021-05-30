@@ -1,7 +1,9 @@
 package querybuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CompilerImp implements Compiler {
 
@@ -44,6 +46,9 @@ public class CompilerImp implements Compiler {
     private String andHavingHelp;
     private String orHavinHelp;
 
+    private String varName;
+    private Map<String, String> varMap;
+
     /*
     Primer upita:
     var query = new Query("Departments").OrderBy("manager_id").Where("department_id", ">", 50).OrWhere("department_name","like","C%")
@@ -55,6 +60,7 @@ public class CompilerImp implements Compiler {
         this.queryList = new ArrayList();
         this.aliasList = new ArrayList<>();
         this.tempList = new ArrayList<>();
+        this.varMap = new HashMap<>();
     }
 
     @Override
@@ -68,6 +74,8 @@ public class CompilerImp implements Compiler {
         tempMax = " ";
         andHavingHelp = " ";
         orHavinHelp = " ";
+        String[] var = text.split(" ");
+        varName = var[1];
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
@@ -85,6 +93,8 @@ public class CompilerImp implements Compiler {
         }
 
         checkQueryOrder();
+        varMap.put(varName, completeQuery.toString());
+        //System.out.println(varMap);
         return completeQuery.toString();
 
         //return "select * from jobs where max_salary>=9001";
@@ -221,7 +231,6 @@ public class CompilerImp implements Compiler {
                 break;
             case "OrWhere":
                 sb = new StringBuilder();
-                ;
                 sb.append(args);
                 for (int i = 0; i < sb.length(); i++) {
                     if ((sb.charAt(i) == '"') || (sb.charAt(i) == ',')) {
@@ -251,7 +260,6 @@ public class CompilerImp implements Compiler {
                 break;
             case "AndWhere":
                 sb = new StringBuilder();
-                ;
                 sb.append(args);
                 for (int i = 0; i < sb.length(); i++) {
                     if ((sb.charAt(i) == '"') || (sb.charAt(i) == ',')) {
@@ -833,7 +841,7 @@ public class CompilerImp implements Compiler {
 
 
                 break;
-            case "AndHaving": //TODO andhaving, orhaving
+            case "AndHaving":
                 //args je alias, operator, kriterijum
                 System.out.println("andhaving: " + q + " " + args);
                 sb = new StringBuilder();
@@ -917,14 +925,14 @@ public class CompilerImp implements Compiler {
                 sb = new StringBuilder();
                 sb.append(args);
                 for (int i = 0; i < sb.length(); i++) {
-                    if ((sb.charAt(i) == '"') || (sb.charAt(i) == ',')) {
+                    if ((sb.charAt(i) == '"')) {
                         sb.setCharAt(i, ' ');
                     }
                 }
                 //ime kolone , a -> where ime_kolone in a
-                //TODO a promeniti u upit
                 String[] wiqSplit = sb.toString().split(",");
-                whereInQ = " where " + wiqSplit[0] + " in " + wiqSplit[1];
+                //wiqSplit[1] -> nadji u mapi
+                whereInQ = " where " + wiqSplit[0] + " in (" + varMap.get(wiqSplit[1].trim()) + ")";
                 System.out.println(whereInQ);
                 queryList.add(whereInQ);
                 break;
@@ -939,9 +947,8 @@ public class CompilerImp implements Compiler {
                     }
                 }
                 //ime kolone , a -> where ime_kolone = a
-                //TODO a promeniti u upit
                 String[] weqSplit = sb.toString().split(",");
-                whereEqQ = " where " + weqSplit[0] + " = " + weqSplit[1];
+                whereEqQ = " where " + weqSplit[0] + " = " + varMap.get(weqSplit[1].trim());
                 System.out.println(whereEqQ);
                 queryList.add(whereEqQ);
                 break;
@@ -1005,6 +1012,7 @@ public class CompilerImp implements Compiler {
         completeQuery = new StringBuilder();
         queryList = new ArrayList<>();
         selectName = "";
+        varName = "";
     }
 
     @Override
