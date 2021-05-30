@@ -60,6 +60,7 @@ public class AppCore extends PublisherImplementation {
     //"select * from jobs where max_salary>=9001"
     public void compileCore(String text){
         compiler.reset();
+        validator.validate(text);
         String c = compiler.compile(text);
         this.readDataFromTable(c, compiler.getTable());
         //System.out.println("Ovo je compiler vratio: " + c);

@@ -1,24 +1,32 @@
 package querybuilder;
 
+import lombok.NoArgsConstructor;
+import querybuilder.rules.Rules;
+import querybuilder.rules.VarNewQuery;
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor
 public class ValidatorImp implements Validator{
 
-    private String text;
-
-    //var b = new Query("jobs").Select("job_title","prosecnaPlata").Avg("salary","prosecnaPlata").GroupBy("job_title")
-    // .Join("jobs").On("jobs.job_id","=","employees.job_id").WhereInQ("employee_id", a)
-    public ValidatorImp(String text) {
-        this.text = text;
-        validate(text);
-    }
-
-    public ValidatorImp() {
-
-    }
+    private List<Rules> rules = new ArrayList<>();
+    private int passed;
 
     @Override
     public void validate(String text) {
-        //TODO validacija
-      //  CompilerImp c = new CompilerImp(text);
+        //ovde cemo da dodajemo pravila u listu:
+        this.rules.add(new VarNewQuery());
+        //TODO napraviti jos pravila
+
+        passed = 0;
+        for(Rules r: rules){
+            if(r.checkTheRule(text)){
+                passed++; //koliko pravila je prosao
+            } else {
+                System.out.println(r.getErrorMessage());
+            }
+        }
+        if(passed == rules.size()) System.out.println("All rules passed!");
     }
 
 }

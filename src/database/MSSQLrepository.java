@@ -78,9 +78,6 @@ public class MSSQLrepository implements Repository {
 
             }
 
-
-            //TODO Ogranicenja nad kolonama? Relacije?
-
             return ir;
             // String isNullable = columns.getString("IS_NULLABLE");
             // ResultSet foreignKeys = metaData.getImportedKeys(connection.getCatalog(), null, table.getName());

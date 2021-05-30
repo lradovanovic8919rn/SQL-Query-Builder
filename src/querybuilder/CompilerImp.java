@@ -11,7 +11,6 @@ public class CompilerImp implements Compiler{
     private List<String> queryList;
     private List<String> tempList;
     private List<String> aliasList;
-
     private String selectName;
     private String andWhere;
     private String orWhere;
@@ -802,7 +801,7 @@ public class CompilerImp implements Compiler{
                 groupBy = " group by " + sb+" ";
                 queryList.add(groupBy);
                 break;
-            case "Having": //TODO moram da pogledam kako treba da izgleda having na kraju
+            case "Having":
                 //args je alias, operator, kriterijum
                 System.out.println("having: " + q + " " + args);
                 sb = new StringBuilder();
@@ -826,7 +825,7 @@ public class CompilerImp implements Compiler{
                 queryList.add(having);
                 */
                 break;
-            case "AndHaving":
+            case "AndHaving": //TODO andhaving, orhaving
                 //args je alias, operator, kriterijum
                 System.out.println("andhaving: " + q + " " + args);
                 sb = new StringBuilder();
