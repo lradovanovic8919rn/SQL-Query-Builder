@@ -1,6 +1,5 @@
 package querybuilder;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +9,9 @@ public class CompilerImp implements Compiler{
     private String table;
     private StringBuilder completeQuery;
     private List<String> queryList;
+    private List<String> tempList;
+    private List<String> aliasList;
+
     private String selectName;
     private String andWhere;
     private String orWhere;
@@ -36,7 +38,10 @@ public class CompilerImp implements Compiler{
     private String whereInQ;
     private String whereEqQ;
     private int flg;
-    private String tempo;
+    private String tempAvg;
+    private String tempCount;
+    private String tempMin;
+    private String tempMax;
 
     /*
     Primer upita:
@@ -47,6 +52,8 @@ public class CompilerImp implements Compiler{
     public CompilerImp() {
         this.completeQuery = new StringBuilder();
         this.queryList = new ArrayList();
+        this.aliasList=new ArrayList<>();
+        this.tempList=new ArrayList<>();
     }
 
     @Override
@@ -54,7 +61,10 @@ public class CompilerImp implements Compiler{
         this.text = text;
         andWhere=" ";
         orWhere=" ";
-        tempo= " ";
+        tempAvg = " ";
+        tempCount=" ";
+        tempMin=" ";
+        tempMax=" ";
         String[] parts = text.split("\\.");
         String[] tableName = parts[0].split("\"");
         table = tableName[1];
@@ -119,20 +129,40 @@ public class CompilerImp implements Compiler{
                 this.selectName = temp.toString();
                 //System.out.println(temp);
                 //queryList.add("select " + selectName);
-                if(tempo==" ") {
+                int tempHelp=0;
+                String ths=null;
+                String ahs=null;
+                for(String sh:tempList){
+                    if (sh!=" "){
+                        tempHelp=1;
+                        ths=sh;
+                    }
+                }
+                if(tempHelp==0){
                     completeQuery.replace(0, completeQuery.length(), "select " + selectName + " from " + table);
-                }else{
-                    if(selectName.contains(avgAlias)){
-                        selectName=selectName.replace(avgAlias,tempo);
+                }
+                if(tempHelp==1){
+                    for (String shs:aliasList){
+                        if(ths.contains(shs)){
+                            ahs=shs;
+                        }
+                    }
+                    if(selectName.contains(ahs)){
+                        selectName=selectName.replace(ahs, ths);
                         completeQuery.replace(0, completeQuery.length(), "select " + selectName + " from " + table);
 
                     }else {
-                        completeQuery.replace(0, completeQuery.length(), "select " + selectName+","+tempo + " from " + table);
-                        System.out.print("sssssssssssssssssssssssssssssssss+++");
+                        completeQuery.replace(0, completeQuery.length(), "select " + selectName+","+ ths + " from " + table);
 
                     }
                 }
-                System.out.println("ssssssssssssssssssss"+tempo);
+
+                System.out.println(completeQuery.toString());
+                System.out.println("aaaaaaaaaaaaa"+ahs);
+                System.out.println("tempppppppppppp"+ths);
+
+
+
                 break;
 
             //sortiranje
@@ -413,22 +443,12 @@ public class CompilerImp implements Compiler{
                     if((text.contains(".Select("))&&!(completeQuery.toString().contains("select * "))){
                         flg++;
                         if(completeQuery.toString().contains(avgAlias.trim())) {
-                            /*for (int i = 0; i < completeQuery.toString().length(); i++) {
-                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
-                                    String ss1 = completeQuery.toString().substring(0, i + 1);
-                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
-                                    String ss3 = ss1.replace(avgAlias, avg + " as \"" + avgAlias + "\" ");
-                                  //  completeQuery.append(ss3);
-                                   // completeQuery.append(avg + " as \"" + avgAlias + "\" ");
-                                   // completeQuery.append(ss2);
-                                    break;
-                                }
+                            if(!completeQuery.toString().contains("as \""+avgAlias+"\"")) {
 
-                            }*/
-                             String cc= completeQuery.toString().replace(avgAlias, avg + " as \"" + avgAlias + "\" ");
-                             completeQuery = new StringBuilder();
-                             completeQuery.append(cc);
-
+                                String cc = completeQuery.toString().replace(avgAlias, avg + " as \"" + avgAlias + "\" ");
+                                completeQuery = new StringBuilder();
+                                completeQuery.append(cc);
+                            }
 
                         }else if(!completeQuery.toString().contains(avgAlias.trim())){
                             for (int i = 0; i < completeQuery.toString().length(); i++) {
@@ -446,8 +466,8 @@ public class CompilerImp implements Compiler{
                     }
 
                     if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
-                        if(tempo==" "){
-                            tempo =avg + " as \"" + avgAlias + " \" ";
+                        if(tempAvg ==" "){
+                            tempAvg =avg + " as \"" + avgAlias + " \" ";
 
                         }
                     }
@@ -483,14 +503,16 @@ public class CompilerImp implements Compiler{
                             }
                         }
                     }
-                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))&&(flg>0)){
-                        if(tempo==" "){
-                            tempo = avg + " ";
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempAvg ==" "){
+                            tempAvg = avg + " ";
 
                         }
                     }
 
                 }
+                aliasList.add(avgAlias);
+                tempList.add(tempAvg);
                 break;
             case "Count":
                 //args je kolona, alias
@@ -506,12 +528,75 @@ public class CompilerImp implements Compiler{
                     String[] countSplit = sb.toString().split(",");
                     count = " count(" + countSplit[0] + ")";
                     countAlias = countSplit[1];
+
+                    if((text.contains(".Select("))&&!(completeQuery.toString().contains("select * "))){
+                        if(completeQuery.toString().contains(countAlias.trim())) {
+                            if(!completeQuery.toString().contains("as \""+countAlias+"\"")) {
+
+                                String cc = completeQuery.toString().replace(countAlias, count + " as \"" + countAlias + "\" ");
+                                completeQuery = new StringBuilder();
+                                completeQuery.append(cc);
+                            }
+
+                        }else if(!completeQuery.toString().contains(countAlias.trim())){
+                            for (int i = 0; i < completeQuery.toString().length(); i++) {
+                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
+                                    String ss1 = completeQuery.toString().substring(0, i + 1);
+                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
+                                    completeQuery = new StringBuilder();
+                                    completeQuery.append(ss1);
+                                    completeQuery.append(","+count + " as \"" + countAlias + "\" ");
+                                    completeQuery.append(ss2);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempCount ==" "){
+                            tempCount =count + " as \"" + countAlias + " \" ";
+
+                        }
+                    }
+                    if((!text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        String cc= completeQuery.toString().replace("*",count + " as \"" + countAlias + " \"");
+                        completeQuery = new StringBuilder();
+                        completeQuery.append(cc);
+                    }
                     System.out.println("count: " + count);
-                    queryList.add(count);
                 } else { //znaci da nema alias
                     count = " count(" + sb + ")";
-                    queryList.add(count);
+                    if(completeQuery.toString().contains("select * ")){
+                        String ss =completeQuery.toString().replace("select *","select "+count+" ");
+                        completeQuery=new StringBuilder();
+                        completeQuery.append(ss+"");
+
+                        System.out.println(ss);
+
+                        System.out.println(completeQuery.toString());
+                    }else{
+                        for(int i=0;i<completeQuery.toString().length();i++){
+                            if((completeQuery.toString().charAt(i)==' ')&&(completeQuery.toString().charAt(i+1)=='f')&&(completeQuery.toString().charAt(i+2)=='r')&&(completeQuery.toString().charAt(i+3)=='o')&&(completeQuery.toString().charAt(i+4)=='m')&&(completeQuery.toString().charAt(i+5)==' ')){
+                                String ss1=completeQuery.toString().substring(0,i+1);
+                                String ss2=completeQuery.toString().substring(i+1,completeQuery.toString().length());
+                                completeQuery=new StringBuilder();
+                                completeQuery.append(ss1);
+                                completeQuery.append(" , "+count+" ");
+                                completeQuery.append(ss2);
+                                break;
+                            }
+                        }
+                    }
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempCount ==" "){
+                            tempCount = count + " ";
+
+                        }
+                    }
                 }
+                aliasList.add(countAlias);
+                tempList.add(tempCount);
                 break;
             case "Min":
                 //args je kolona, alias
@@ -528,12 +613,83 @@ public class CompilerImp implements Compiler{
                     min = " min(" + minSplit[0] + ")";
                     minAlias = minSplit[1];
 
+                    if((text.contains(".Select("))&&(!completeQuery.toString().contains("select * "))){
+                        if(completeQuery.toString().contains(minAlias)) {
+                            if(!completeQuery.toString().contains("as \""+minAlias+"\"")) {
+                                String cc = null;
+                                String ssss = minAlias;
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas" + ssss);
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + completeQuery);
+                                cc = completeQuery.toString().replace(minAlias, min + " as \"" + ssss + "\" ");
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + ssss);
+                                //System.out.println("Alijaaaaaaaaaaaaaaaaaaaas "+completeQuery);
+                                System.out.println("ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" + cc);
+
+                                completeQuery = new StringBuilder();
+                                completeQuery.append(cc);
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + completeQuery);
+                            }
+
+                        }else if(!completeQuery.toString().contains(minAlias)){
+                            for (int i = 0; i < completeQuery.toString().length(); i++) {
+                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
+                                    String ss1 = completeQuery.toString().substring(0, i + 1);
+                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
+                                    completeQuery = new StringBuilder();
+                                    completeQuery.append(ss1);
+                                    completeQuery.append(","+min + " as \"" + minAlias + "\" ");
+                                    completeQuery.append(ss2);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempMin ==" "){
+                            tempMin =min + " as \"" + minAlias + " \" ";
+
+                        }
+                    }
+                    if((!text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        String cc= completeQuery.toString().replace("*",min + " as \"" + minAlias + " \"");
+                        completeQuery = new StringBuilder();
+                        completeQuery.append(cc);
+                    }
+
                     System.out.println("min: " + min);
-                    queryList.add(min);
                 } else { //znaci da nema alias
                     min = " min(" + sb + ")";
-                    queryList.add(min);
+                    if(completeQuery.toString().contains("select * ")){
+                        String ss =completeQuery.toString().replace("select *","select "+min+" ");
+                        completeQuery=new StringBuilder();
+                        completeQuery.append(ss+"");
+
+                        System.out.println(ss);
+
+                        System.out.println(completeQuery.toString());
+                    }else{
+                        for(int i=0;i<completeQuery.toString().length();i++){
+                            if((completeQuery.toString().charAt(i)==' ')&&(completeQuery.toString().charAt(i+1)=='f')&&(completeQuery.toString().charAt(i+2)=='r')&&(completeQuery.toString().charAt(i+3)=='o')&&(completeQuery.toString().charAt(i+4)=='m')&&(completeQuery.toString().charAt(i+5)==' ')){
+                                String ss1=completeQuery.toString().substring(0,i+1);
+                                String ss2=completeQuery.toString().substring(i+1,completeQuery.toString().length());
+                                completeQuery=new StringBuilder();
+                                completeQuery.append(ss1);
+                                completeQuery.append(" , "+min+" ");
+                                completeQuery.append(ss2);
+                                break;
+                            }
+                        }
+                    }
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempMin ==" "){
+                            tempMin = min + " ";
+
+                        }
+                    }
                 }
+                tempList.add(tempMin);
+                aliasList.add(minAlias);
                 break;
             case "Max":
                 //args je kolona, alias
@@ -550,11 +706,81 @@ public class CompilerImp implements Compiler{
                     max = " max(" + maxSplit[0] + ")";
                     maxAlias = maxSplit[1];
                     System.out.println("max: " + max);
-                    queryList.add(max);
+                    if((text.contains(".Select("))&&(!completeQuery.toString().contains("select * "))){
+                        if(completeQuery.toString().contains(maxAlias)) {
+                            if(!completeQuery.toString().contains("as \""+maxAlias+"\"")) {
+                                String cc = null;
+                                String ssss = maxAlias;
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas" + ssss);
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + completeQuery);
+                                cc = completeQuery.toString().replace(maxAlias, max + " as \"" + ssss + "\" ");
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + ssss);
+                                //System.out.println("Alijaaaaaaaaaaaaaaaaaaaas "+completeQuery);
+                                System.out.println("ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" + cc);
+
+                                completeQuery = new StringBuilder();
+                                completeQuery.append(cc);
+                                System.out.println("Alijaaaaaaaaaaaaaaaaaaaas " + completeQuery);
+                            }
+
+                        }else if(!completeQuery.toString().contains(maxAlias)){
+                            for (int i = 0; i < completeQuery.toString().length(); i++) {
+                                if ((completeQuery.toString().charAt(i) == ' ') && (completeQuery.toString().charAt(i + 1) == 'f') && (completeQuery.toString().charAt(i + 2) == 'r') && (completeQuery.toString().charAt(i + 3) == 'o') && (completeQuery.toString().charAt(i + 4) == 'm') && (completeQuery.toString().charAt(i + 5) == ' ')) {
+                                    String ss1 = completeQuery.toString().substring(0, i + 1);
+                                    String ss2 = completeQuery.toString().substring(i + 1, completeQuery.toString().length());
+                                    completeQuery = new StringBuilder();
+                                    completeQuery.append(ss1);
+                                    completeQuery.append(","+max + " as \"" + maxAlias + "\" ");
+                                    completeQuery.append(ss2);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempMax ==" "){
+                            tempMax =max + " as \"" + maxAlias + " \" ";
+
+                        }
+                    }
+                    if((!text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        String cc= completeQuery.toString().replace("*",max + " as \"" + maxAlias + " \"");
+                        completeQuery = new StringBuilder();
+                        completeQuery.append(cc);
+                    }
                 } else { //znaci da nema alias
                     max = " max(" + sb + ")";
-                    queryList.add(max);
+                    if(completeQuery.toString().contains("select * ")){
+                        String ss =completeQuery.toString().replace("select *","select "+max+" ");
+                        completeQuery=new StringBuilder();
+                        completeQuery.append(ss+"");
+
+                        System.out.println(ss);
+
+                        System.out.println(completeQuery.toString());
+                    }else{
+                        for(int i=0;i<completeQuery.toString().length();i++){
+                            if((completeQuery.toString().charAt(i)==' ')&&(completeQuery.toString().charAt(i+1)=='f')&&(completeQuery.toString().charAt(i+2)=='r')&&(completeQuery.toString().charAt(i+3)=='o')&&(completeQuery.toString().charAt(i+4)=='m')&&(completeQuery.toString().charAt(i+5)==' ')){
+                                String ss1=completeQuery.toString().substring(0,i+1);
+                                String ss2=completeQuery.toString().substring(i+1,completeQuery.toString().length());
+                                completeQuery=new StringBuilder();
+                                completeQuery.append(ss1);
+                                completeQuery.append(" , "+max+" ");
+                                completeQuery.append(ss2);
+                                break;
+                            }
+                        }
+                    }
+                    if((text.contains(".Select("))&&(completeQuery.toString().contains("select * "))){
+                        if(tempMax ==" "){
+                            tempMax = max + " ";
+
+                        }
+                    }
                 }
+                aliasList.add(maxAlias);
+                tempList.add(tempMax);
                 break;
             case "GroupBy": //moze vise od 1 arg
                 //args je samo kolona/e
