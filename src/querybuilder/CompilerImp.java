@@ -792,7 +792,7 @@ public class CompilerImp implements Compiler{
                         sb.setCharAt(i, ' ');
                     }
                 }
-                groupBy = " group by " + sb;
+                groupBy = " group by " + sb+" ";
                 queryList.add(groupBy);
                 break;
             case "Having": //TODO moram da pogledam kako treba da izgleda having na kraju
@@ -923,6 +923,11 @@ public class CompilerImp implements Compiler{
         }
         for(String s:queryList){
             if( s.contains(" where ")) {
+                completeQuery.append(s);
+            }
+        }
+        for(String s:queryList){
+            if( s.contains(" group by ")) {
                 completeQuery.append(s);
             }
         }
