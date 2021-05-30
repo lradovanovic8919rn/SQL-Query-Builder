@@ -12,9 +12,10 @@ public class ValidatorImp implements Validator {
 
     private List<Rules> rules = new ArrayList<>();
     private int passed;
+    private List<Rules> failedRules = new ArrayList<>();
 
     @Override
-    public void validate(String text) {
+    public boolean validate(String text) {
         //ovde cemo da dodajemo pravila u listu:
         this.rules.add(new VarNewQuery());
         //TODO napraviti jos pravila
@@ -22,12 +23,26 @@ public class ValidatorImp implements Validator {
         passed = 0;
         for (Rules r : rules) {
             if (r.checkTheRule(text)) {
-                passed++; //koliko pravila je prosao
+                passed++;
             } else {
-                System.out.println(r.getErrorMessage());
+                //System.out.println(r.getErrorMessage());
+                failedRules.add(r);
             }
         }
-        if (passed == rules.size()) System.out.println("All rules passed!");
+
+        if (passed == rules.size()) {
+            System.out.println("All rules passed!");
+            return true;
+        }
+
+        return  false;
+    }
+
+    @Override
+    public void printFailedRules() {
+        for (Rules r : failedRules) {
+            System.out.println(r.getErrorMessage());
+        }
     }
 
 }

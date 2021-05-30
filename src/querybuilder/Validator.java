@@ -1,5 +1,7 @@
 package querybuilder;
 
 public interface Validator {
-    void validate(String text);
+    boolean validate(String text);
+
+    void printFailedRules();
 }
