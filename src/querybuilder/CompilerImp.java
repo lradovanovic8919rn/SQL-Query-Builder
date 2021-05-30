@@ -792,6 +792,13 @@ public class CompilerImp implements Compiler{
                         sb.setCharAt(i, ' ');
                     }
                 }
+                for (String strtr:aliasList){
+                    if((sb.toString().contains(strtr))&&(strtr!=" ")){
+                        String novi=sb.toString().replace(strtr," \" "+strtr+" \" ");
+                        sb=new StringBuilder();
+                        sb.append(novi);
+                    }
+                }
                 groupBy = " group by " + sb+" ";
                 queryList.add(groupBy);
                 break;
@@ -801,11 +808,14 @@ public class CompilerImp implements Compiler{
                 sb = new StringBuilder();
                 sb.append(args);
                 for(int i=0; i<sb.length(); i++) {
-                    if(sb.charAt(i) == '"') {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
                         sb.setCharAt(i, ' ');
                     }
                 }
-                String[] havingSplit = sb.toString().split(",");
+               // String[] havingSplit = sb.toString().split(",");
+
+                String hv=" having "+sb.toString()+" ";
+                queryList.add(hv);
                 /*
                 having = " having " + havingSplit[0] + " ";
                 havingAlias = havingSplit[1];
@@ -827,6 +837,7 @@ public class CompilerImp implements Compiler{
                     }
                 }
                 String[] andHavingSplit = sb.toString().split(",");
+
                 /*
                 andHaving = " andHaving " + andHavingSplit[0] + " ";
                 andHavingAlias = andHavingSplit[1];
@@ -928,6 +939,11 @@ public class CompilerImp implements Compiler{
         }
         for(String s:queryList){
             if( s.contains(" group by ")) {
+                completeQuery.append(s);
+            }
+        }
+        for(String s:queryList){
+            if( s.contains(" having ")) {
                 completeQuery.append(s);
             }
         }
