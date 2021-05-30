@@ -880,7 +880,7 @@ public class CompilerImp implements Compiler{
                 sb = new StringBuilder();
                 sb.append(args);
                 for(int i=0; i<sb.length(); i++) {
-                    if(sb.charAt(i) == '"') {
+                    if((sb.charAt(i) == '"')||(sb.charAt(i) == ',')) {
                         sb.setCharAt(i, ' ');
                     }
                 }
