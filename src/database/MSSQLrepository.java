@@ -10,6 +10,7 @@ import resource.implementation.Entity;
 import resource.implementation.InformationResource;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,7 +114,14 @@ public class MSSQLrepository implements Repository {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 System.out.println(text);
                 for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                    row.addField(resultSetMetaData.getColumnName(i), rs.getString(i));
+                    try{
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/d");
+                        row.addField(resultSetMetaData.getColumnName(i), sdf.format(rs.getDate(i)));
+                    }catch (Exception e){
+                        //System.out.println("Jos nisam naisao na datum");
+                        row.addField(resultSetMetaData.getColumnName(i), rs.getString(i));
+                    }
+                    //row.addField(resultSetMetaData.getColumnName(i), rs.getString(i));
                 }
                 rows.add(row);
 
