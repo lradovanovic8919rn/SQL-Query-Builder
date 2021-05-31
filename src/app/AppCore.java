@@ -5,6 +5,7 @@ import database.DatabaseImplementation;
 import database.MSSQLrepository;
 import database.settings.Settings;
 import database.settings.SettingsImplementation;
+import gui.MainFrame;
 import gui.table.TableModel;
 import observer.Notification;
 import observer.enums.NotificationCode;
@@ -60,6 +61,7 @@ public class AppCore extends PublisherImplementation {
             this.readDataFromTable(c, compiler.getTable());
         } else {
             validator.printFailedRules();
+            MainFrame.getInstance().setErrorMessage(validator.getFailedRules());
         }
         //System.out.println("Ovo je compiler vratio: " + c);
     }

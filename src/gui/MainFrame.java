@@ -51,12 +51,9 @@ public class MainFrame extends JFrame implements Subscriber {
         jTextArea.setLineWrap(true);
 
         jButton = new JButton("Run SQL");
-        jButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Upit -> validator
-                appCore.compileCore(jTextArea.getText());
-            }
+        jButton.addActionListener(e -> {
+            //Upit -> validator
+            appCore.compileCore(jTextArea.getText());
         });
         Box box = Box.createHorizontalBox();
         box.add(Box.createHorizontalGlue());
@@ -83,6 +80,10 @@ public class MainFrame extends JFrame implements Subscriber {
         this.jTable.setModel(appCore.getTableModel());
     }
 
+    public void setErrorMessage(String errorMessage)
+    {
+        JOptionPane.showMessageDialog(null, errorMessage, "Validator error", JOptionPane.ERROR_MESSAGE);
+    }
 
     @Override
     public void update(Notification notification) {

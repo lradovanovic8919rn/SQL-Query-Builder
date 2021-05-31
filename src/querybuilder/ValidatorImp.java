@@ -54,4 +54,13 @@ public class ValidatorImp implements Validator {
         }
     }
 
+    @Override
+    public String getFailedRules() {
+        StringBuilder sb = new StringBuilder();
+        for (Rules r : failedRules) {
+            sb.append(r.getErrorMessage()).append("\n");
+        }
+        return sb.toString();
+    }
+
 }
