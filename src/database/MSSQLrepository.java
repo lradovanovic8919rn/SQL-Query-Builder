@@ -54,7 +54,7 @@ public class MSSQLrepository implements Repository {
             DatabaseMetaData metaData = connection.getMetaData();
             InformationResource ir = new InformationResource("RAF_BP_Primer");
 
-            String tableType[] = {"TABLE"};
+            String[] tableType = {"TABLE"};
             ResultSet tables = metaData.getTables(connection.getCatalog(), null, null, tableType);
 
             while (tables.next()) {
@@ -102,8 +102,7 @@ public class MSSQLrepository implements Repository {
         try {
             this.initConnection();
 
-            String query = text;
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(text);
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
@@ -114,10 +113,10 @@ public class MSSQLrepository implements Repository {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 System.out.println(text);
                 for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                    try{
+                    try {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/d");
                         row.addField(resultSetMetaData.getColumnName(i), sdf.format(rs.getDate(i)));
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         //System.out.println("Jos nisam naisao na datum");
                         row.addField(resultSetMetaData.getColumnName(i), rs.getString(i));
                     }
