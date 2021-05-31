@@ -3,7 +3,6 @@ package querybuilder.rules;
 public class JoinArgsRule implements Rules {
     @Override
     public boolean checkTheRule(String string) {
-        String[] var = string.split(" ");
         String[] parts = string.split("\\.");
         String temp = string.substring(string.indexOf(".") + 1);
         String[] newParts = temp.split("\\)\\.");
@@ -32,6 +31,6 @@ public class JoinArgsRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "JoinArgs rule failed!You must Join().On() other table!";
+        return "JoinArgs rule failed! You must Join().On() other table!";
     }
 }

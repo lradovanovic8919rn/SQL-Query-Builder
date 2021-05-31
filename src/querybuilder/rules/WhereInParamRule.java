@@ -16,6 +16,6 @@ public class WhereInParamRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "WhereInParametarList rule failed!You have to use both WhereIn() and PrarametarList() commands!";
+        return "WhereInParametarList rule failed! You have to use both WhereIn() and PrarametarList() commands!";
     }
 }

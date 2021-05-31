@@ -19,16 +19,14 @@ import utils.Constants;
 
 public class AppCore extends PublisherImplementation {
 
-    private Database database;
-    private Settings settings;
+    private final Database database;
+    private final Validator validator;
+    private final Compiler compiler;
     private TableModel tableModel;
-    private Validator validator;
-    private Compiler compiler;
-
 
     public AppCore() {
-        this.settings = initSettings();
-        this.database = new DatabaseImplementation(new MSSQLrepository(this.settings));
+        Settings settings = initSettings();
+        this.database = new DatabaseImplementation(new MSSQLrepository(settings));
         tableModel = new TableModel();
         this.compiler = new CompilerImp();
         this.validator = new ValidatorImp();
@@ -43,24 +41,21 @@ public class AppCore extends PublisherImplementation {
         return settingsImplementation;
     }
 
-
     public void loadResource() {
         InformationResource ir = (InformationResource) this.database.loadResource();
         this.notifySubscribers(new Notification(NotificationCode.RESOURCE_LOADED, ir));
     }
 
     public void readDataFromTable(String text, String fromTable) {
-
         tableModel.setRows(this.database.readDataFromTable(text, fromTable));
-
         //Zasto ova linija moze da ostane zakomentarisana?
         //this.notifySubscribers(new Notification(NotificationCode.DATA_UPDATED, this.getTableModel()));
     }
 
     //"select * from jobs where max_salary>=9001"
     public void compileCore(String text) {
-        compiler.reset();
         if (validator.validate(text)) {
+            compiler.reset();
             String c = compiler.compile(text);
             this.readDataFromTable(c, compiler.getTable());
         } else {
@@ -69,16 +64,11 @@ public class AppCore extends PublisherImplementation {
         //System.out.println("Ovo je compiler vratio: " + c);
     }
 
-
     public TableModel getTableModel() {
         return tableModel;
     }
 
     public void setTableModel(TableModel tableModel) {
         this.tableModel = tableModel;
-    }
-
-    public Compiler getCompiler() {
-        return compiler;
     }
 }

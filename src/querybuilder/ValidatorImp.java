@@ -9,15 +9,14 @@ import java.util.List;
 @NoArgsConstructor
 public class ValidatorImp implements Validator {
 
-    private List<Rules> rules = new ArrayList<>();
-    private int passed;
-    private List<Rules> failedRules = new ArrayList<>();
+    private final List<Rules> rules = new ArrayList<>();
+    private final List<Rules> failedRules = new ArrayList<>();
 
     @Override
     public boolean validate(String text) {
         //ovde cemo da dodajemo pravila u listu:
-        this.rules.add(new VarNewQuery());
-        this.rules.add(new HavingGroupBy());
+        this.rules.add(new VarNewQueryRule());
+        this.rules.add(new HavingGroupByRule());
         this.rules.add(new JoinOnRule());
         this.rules.add(new WhereInParamRule());
         this.rules.add(new HavingAmountRule());
@@ -25,9 +24,10 @@ public class ValidatorImp implements Validator {
         this.rules.add(new WhereInOrderRule());
         this.rules.add(new JoinOnOrderRule());
         this.rules.add(new JoinArgsRule());
+        this.rules.add(new HavingAliasRule());
         //TODO napraviti jos pravila
 
-        passed = 0;
+        int passed = 0;
         for (Rules r : rules) {
             if (r.checkTheRule(text)) {
                 passed++;

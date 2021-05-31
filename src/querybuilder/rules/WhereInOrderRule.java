@@ -1,12 +1,8 @@
 package querybuilder.rules;
 
 public class WhereInOrderRule implements Rules {
-
     @Override
     public boolean checkTheRule(String string) {
-
-        String[] var = string.split(" ");
-        String[] parts = string.split("\\.");
         String temp = string.substring(string.indexOf(".") + 1);
         String[] newParts = temp.split("\\)\\.");
         if (string.contains("WhereIn(")) {
@@ -23,6 +19,6 @@ public class WhereInOrderRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "WhereInOrder rule failed!You have to use WhereIn().ParametarList() in this exact order!";
+        return "WhereInOrder rule failed! You have to use WhereIn().ParametarList() in this exact order!";
     }
 }

@@ -16,6 +16,6 @@ public class JoinOnRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "JoinOn rule failed!You have to use both Join() and On() commands!";
+        return "JoinOn rule failed! You have to use both Join() and On() commands!";
     }
 }

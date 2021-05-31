@@ -3,11 +3,7 @@ package querybuilder.rules;
 public class WhereAmountRule implements Rules {
     @Override
     public boolean checkTheRule(String string) {
-
         int counter = 0;
-
-        String[] var = string.split(" ");
-        String[] parts = string.split("\\.");
         String temp = string.substring(string.indexOf(".") + 1);
         String[] newParts = temp.split("\\)\\.");
 
@@ -21,6 +17,6 @@ public class WhereAmountRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "WhereAmount rule failed!You can call use where only once per query!";
+        return "WhereAmount rule failed! You can call use where only once per query!";
     }
 }

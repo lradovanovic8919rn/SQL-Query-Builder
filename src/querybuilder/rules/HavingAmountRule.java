@@ -3,11 +3,7 @@ package querybuilder.rules;
 public class HavingAmountRule implements Rules {
     @Override
     public boolean checkTheRule(String string) {
-
         int counter = 0;
-
-        String[] var = string.split(" ");
-        String[] parts = string.split("\\.");
         String temp = string.substring(string.indexOf(".") + 1);
         String[] newParts = temp.split("\\)\\.");
 
@@ -21,6 +17,6 @@ public class HavingAmountRule implements Rules {
 
     @Override
     public String getErrorMessage() {
-        return "HavingAmount rule failed!You can call Having() only once!";
+        return "HavingAmount rule failed! You can call Having() only once!";
     }
 }
