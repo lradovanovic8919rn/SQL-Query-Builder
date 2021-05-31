@@ -10,6 +10,7 @@ public class SelectAggregateRule implements Rules {
         String[] newParts = temp.split("\\)\\.");
         List<String> selectArgs = new ArrayList<>();
 
+
         for (String newPart : newParts) {
             if (newPart.contains("Select(")) {
                 String[] args = newPart.split("\"");
@@ -31,7 +32,10 @@ public class SelectAggregateRule implements Rules {
                         if(selectArgs.contains(aAlias[1])) return true;
                     }
                 }
+            }else{
+                return true;
             }
+
         }
         return false;
     }
