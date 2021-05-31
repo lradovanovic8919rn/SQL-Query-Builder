@@ -8,7 +8,7 @@ public class HavingAmountRule implements Rules {
         String[] newParts = temp.split("\\)\\.");
 
         for (String newPart : newParts) {
-            if ((newPart.contains("Having(")) && (!newPart.contains("AndHaving(")) && (!newPart.contains("AndHaving("))) {
+            if ((newPart.contains("Having(")) && (!newPart.contains("AndHaving(")) && (!newPart.contains("OrHaving("))) {
                 counter++;
             }
         }

@@ -14,12 +14,12 @@ public class HavingAliasRule implements Rules {
                     if(np.contains("Avg(") || np.contains("Count(") || np.contains("Min(") || np.contains("Max(")){
                         String[] aAlias = np.split("\"");
                         //System.out.println("a3: " + aAlias[3]);
-                        if(aAlias[3].equals(alias[1])) return true;
+                        return aAlias[3].equals(alias[1]);
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override

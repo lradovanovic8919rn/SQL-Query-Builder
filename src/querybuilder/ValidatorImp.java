@@ -25,6 +25,7 @@ public class ValidatorImp implements Validator {
         this.rules.add(new JoinOnOrderRule());
         this.rules.add(new JoinArgsRule());
         this.rules.add(new HavingAliasRule());
+        this.rules.add(new SelectAggregateRule());
         //TODO napraviti jos pravila
 
         int passed = 0;
