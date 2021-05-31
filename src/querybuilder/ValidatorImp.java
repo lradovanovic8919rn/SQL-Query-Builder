@@ -1,6 +1,7 @@
 package querybuilder;
 
 import lombok.NoArgsConstructor;
+import querybuilder.rules.HavingGroupBy;
 import querybuilder.rules.Rules;
 import querybuilder.rules.VarNewQuery;
 
@@ -18,6 +19,7 @@ public class ValidatorImp implements Validator {
     public boolean validate(String text) {
         //ovde cemo da dodajemo pravila u listu:
         this.rules.add(new VarNewQuery());
+        this.rules.add(new HavingGroupBy());
         //TODO napraviti jos pravila
 
         passed = 0;

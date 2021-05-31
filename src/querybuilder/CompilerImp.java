@@ -948,7 +948,7 @@ public class CompilerImp implements Compiler {
                 }
                 //ime kolone , a -> where ime_kolone = a
                 String[] weqSplit = sb.toString().split(",");
-                whereEqQ = " where " + weqSplit[0] + " = " + varMap.get(weqSplit[1].trim());
+                whereEqQ = " where " + weqSplit[0] + " = (" + varMap.get(weqSplit[1].trim())+") ";
                 System.out.println(whereEqQ);
                 queryList.add(whereEqQ);
                 break;
