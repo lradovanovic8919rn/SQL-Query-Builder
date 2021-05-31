@@ -62,6 +62,7 @@ public class AppCore extends PublisherImplementation {
             compiler.reset();
             String c = compiler.compile(text);
             this.readDataFromTable(c, compiler.getTable());
+            this.loadResource();
         } else {
             validator.printFailedRules();
             //MainFrame.getInstance().setErrorMessage(validator.getFailedRules());
