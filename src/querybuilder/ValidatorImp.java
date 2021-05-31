@@ -1,9 +1,7 @@
 package querybuilder;
 
 import lombok.NoArgsConstructor;
-import querybuilder.rules.HavingGroupBy;
-import querybuilder.rules.Rules;
-import querybuilder.rules.VarNewQuery;
+import querybuilder.rules.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,13 @@ public class ValidatorImp implements Validator {
         //ovde cemo da dodajemo pravila u listu:
         this.rules.add(new VarNewQuery());
         this.rules.add(new HavingGroupBy());
+        this.rules.add(new JoinOnRule());
+        this.rules.add(new WhereInParamRule());
+        this.rules.add(new HavingAmountRule());
+        this.rules.add(new WhereAmountRule());
+        this.rules.add(new WhereInOrderRule());
+        this.rules.add(new JoinOnOrderRule());
+        this.rules.add(new JoinArgsRule());
         //TODO napraviti jos pravila
 
         passed = 0;

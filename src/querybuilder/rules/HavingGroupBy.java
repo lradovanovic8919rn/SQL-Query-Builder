@@ -9,7 +9,7 @@ public class HavingGroupBy implements Rules {
         int hFlag=0;
         int gFlag=0;
 
-            if (s.contains("Having(")){
+            if (s.contains(".Having(")){
                 hFlag++;
             }
             if (s.contains("GroupBy(")){
@@ -19,7 +19,6 @@ public class HavingGroupBy implements Rules {
         if ((gFlag == 0) &&(hFlag>0)){
             return false;
         }
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa "+hFlag+" "+gFlag);
         return true;
     }
 
