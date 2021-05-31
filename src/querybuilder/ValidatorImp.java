@@ -26,7 +26,7 @@ public class ValidatorImp implements Validator {
         this.rules.add(new JoinArgsRule());
         this.rules.add(new HavingAliasRule());
         this.rules.add(new SelectAggregateRule());
-        //TODO napraviti jos pravila
+        this.rules.add(new QueryJoinRule());
 
         int passed = 0;
         for (Rules r : rules) {
@@ -40,6 +40,7 @@ public class ValidatorImp implements Validator {
 
         if (passed == rules.size()) {
             System.out.println("All rules passed!");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~");
             return true;
         }
 
