@@ -10,7 +10,7 @@ import java.util.List;
 public class ValidatorImp implements Validator {
 
     private final List<Rules> rules = new ArrayList<>();
-    private final List<Rules> failedRules = new ArrayList<>();
+    private  List<Rules> failedRules = new ArrayList<>();
 
     @Override
     public boolean validate(String text) {
@@ -29,6 +29,8 @@ public class ValidatorImp implements Validator {
         this.rules.add(new QueryJoinRule());
 
         int passed = 0;
+        failedRules.clear();
+
         for (Rules r : rules) {
             if (r.checkTheRule(text)) {
                 passed++;
@@ -58,7 +60,9 @@ public class ValidatorImp implements Validator {
     public String getFailedRules() {
         StringBuilder sb = new StringBuilder();
         for (Rules r : failedRules) {
-            sb.append(r.getErrorMessage()).append("\n");
+            if(!sb.toString().contains(r.getErrorMessage())) {
+                sb.append(r.getErrorMessage()).append("\n");
+            }
         }
         return sb.toString();
     }

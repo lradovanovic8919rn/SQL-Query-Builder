@@ -17,6 +17,9 @@ import querybuilder.ValidatorImp;
 import resource.implementation.InformationResource;
 import utils.Constants;
 
+import javax.swing.*;
+import java.util.ArrayList;
+
 
 public class AppCore extends PublisherImplementation {
 
@@ -61,7 +64,8 @@ public class AppCore extends PublisherImplementation {
             this.readDataFromTable(c, compiler.getTable());
         } else {
             validator.printFailedRules();
-            MainFrame.getInstance().setErrorMessage(validator.getFailedRules());
+            //MainFrame.getInstance().setErrorMessage(validator.getFailedRules());
+            JOptionPane.showMessageDialog(null, validator.getFailedRules(), "Validator error", JOptionPane.ERROR_MESSAGE);
         }
         //System.out.println("Ovo je compiler vratio: " + c);
     }

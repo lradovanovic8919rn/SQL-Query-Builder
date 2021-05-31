@@ -26,11 +26,11 @@ public class SelectAggregateRule implements Rules {
                         //System.out.println("a3: " + aAlias[3]);
                         if(selectArgs.contains(aAlias[3])) return true;
                     }
-                    if(np.contains("GroupBy(")){
+                    else if(np.contains("GroupBy(")){
                         String[] aAlias = np.split("\"");
                         //System.out.println("a1: " + aAlias[1]);
                         if(selectArgs.contains(aAlias[1])) return true;
-                    }
+                    }else{return true;}
                 }
             }else{
                 return true;
